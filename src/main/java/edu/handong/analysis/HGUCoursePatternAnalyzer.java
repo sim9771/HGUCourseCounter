@@ -7,8 +7,8 @@ import java.util.TreeMap;
 
 import edu.handong.analysis.datamodel.Course;
 import edu.handong.analysis.datamodel.Student;
-import edu.handong.analysise.utils.NotEnoughArgumentException;
-import edu.handong.analysise.utils.Utils;
+import edu.handong.analysis.utils.NotEnoughArgumentException;
+import edu.handong.analysis.utils.Utils;
 
 public class HGUCoursePatternAnalyzer {
 
@@ -43,11 +43,12 @@ public class HGUCoursePatternAnalyzer {
 		ArrayList<String> linesToBeSaved = countNumberOfCoursesTakenInEachSemester(sortedStudents);
 		
 		// Write a file (named like the value of resultPath) with linesTobeSaved.
-		Utils.writeAFile(linesToBeSaved, resultPath);
+		Utils.wirteAFile(linesToBeSaved, resultPath);
 	}
 	
 	/**
-	 * This method create HashMap<String,Student> from the data csv file. Key is a student id and the corresponding object is an instance of Student.
+	 * This method create HashMap<String,Student> from the data csv file. Key is a student id 
+	 * and the corresponding object is an instance of Student.
 	 * The Student instance have all the Course instances taken by the student.
 	 * @param lines
 	 * @return
@@ -55,8 +56,25 @@ public class HGUCoursePatternAnalyzer {
 	private HashMap<String,Student> loadStudentCourseRecords(ArrayList<String> lines) {
 		
 		// TODO: Implement this method
+		HashMap<String, Student> records = new HashMap<String, Student>();
+		for(String line : lines) {
+			Course recordsCourse = new Course(line);
+			String studentId = line.split(",")[0].trim();
+			
+			if(records.containsKey(studentId)) {
+				records.get(studentId).addCourse(recordsCourse);
+				}
+			else {
+				Student stud = new Student(studentId);
+				records.put(studentId, stud);
+				stud.addCourse(recordsCourse);
+				
+				
+			}
+			
+		}
 		
-		return null; // do not forget to return a proper variable.
+		return records; // do not forget to return a proper variable.
 	}
 
 	/**
@@ -75,7 +93,22 @@ public class HGUCoursePatternAnalyzer {
 	private ArrayList<String> countNumberOfCoursesTakenInEachSemester(Map<String, Student> sortedStudents) {
 		
 		// TODO: Implement this method
+		ArrayList<String> result = new ArrayList<String>();
+		result.add("StudentID, TotalNumberOfSemestersRegistered, Semester, NumCoursesTakenInTheSemester");
 		
-		return null; // do not forget to return a proper variable.
-	}
+		for(String key : sortedStudents.keySet()) {
+			HashMap<String, Integer> str = sortedStudents.get(key).getSemestersByYearAndSemester();
+			String totalSem = Integer.toString(str.size());
+			String studID = key;
+			for(int i =1; i <= Integer.parseInt(totalSem); i++) {
+				
+				String NumCoursesTakenInTheSemester = String.valueOf(sortedStudents.get(key).getNumCourseInNthSemester(i));
+				result.add(studID+","+totalSem+","+i+","+NumCoursesTakenInTheSemester);
+				
+			
+		}
+		
+		
+	} return result;
+} 
 }
